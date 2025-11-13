@@ -1,5 +1,25 @@
 import { createApp } from 'vue'
-import './style.css'
+import { createVuetify } from 'vuetify'
 import App from './App.vue'
+import Profile from "./components/ProfileView.vue"
+import Courses from "./components/CoursesView.vue"
+import 'vuetify/styles'
+import * as components from 'vuetify/components'
+import * as directives from 'vuetify/directives'
+import { createRouter, createWebHashHistory } from 'vue-router'
 
-createApp(App).mount('#app')
+const vuetify = createVuetify({ components, directives })
+
+const myComponentRoutes = [
+  {path: '/profile', component: Profile},
+  {path: '/courses', component: Courses},
+];
+
+const myRouter = createRouter({
+  history: createWebHashHistory(),
+  routes: myComponentRoutes,
+})
+
+createApp(App).use(myRouter)
+  .use(vuetify)
+  .mount('#app')
