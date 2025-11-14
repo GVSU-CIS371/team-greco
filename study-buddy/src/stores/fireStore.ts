@@ -14,6 +14,8 @@ import {
   CollectionReference,
   query,
   where,
+  addDoc,
+  DocumentReference,
 } from "firebase/firestore";
 
 const coursesColl: CollectionReference = collection(db, "courses");
@@ -56,5 +58,17 @@ export const useFireStore = defineStore("FireStore", {
     });
 
     return groups;
+  },
+  async addCourse(name:string, section:string){
+    const doc1:DocumentReference = doc(db, "courses", name +""+ section);
+    console.log(doc1);
+    setDoc(doc1, {name: name, section: section}).then(() =>{
+      const newCourse: CourseType = {
+        course_name: name,
+        course_id: name+""+section,
+        course_section: section
+      }
+      this.courses.push(newCourse);
+    })
   }
 }})
