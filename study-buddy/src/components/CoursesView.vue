@@ -25,7 +25,9 @@
           <v-card-title>{{ course.course_name }} - {{ course.course_section }}</v-card-title>
           <v-card-actions>
             <v-btn color="primary" :to="`/groups/${course.course_id}`">View Groups</v-btn>
+            <v-btn color="red" @click="fireStore.deleteCourse(course.course_id)">Delete</v-btn>
           </v-card-actions>
+          
         </v-card>
       </v-col>
     </v-row>
@@ -59,6 +61,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useFireStore } from '../stores/fireStore'
+import { Firestore } from 'firebase/firestore';
 const openDialog = ref(false);
 const fireStore = useFireStore();
 const newCourse = ref({
@@ -72,4 +75,5 @@ async function addCourse(){
     openDialog.value = false;
   }
 }
+
 </script>

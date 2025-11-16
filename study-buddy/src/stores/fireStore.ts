@@ -16,6 +16,7 @@ import {
   where,
   addDoc,
   DocumentReference,
+  deleteDoc,
 } from "firebase/firestore";
 
 const coursesColl: CollectionReference = collection(db, "courses");
@@ -52,7 +53,7 @@ export const useFireStore = defineStore("FireStore", {
         group_id: qd.id,
         course_id: data.Course_id,
         description: data.Description,
-        group_name: data.Group_Name,
+        group_name: data.Group_name,
         meeting_schedule: data.schedule,
       });
     });
@@ -69,6 +70,20 @@ export const useFireStore = defineStore("FireStore", {
         course_section: section
       }
       this.courses.push(newCourse);
+    })
+  },
+  async createGroup(name:string, description:string, schedule:string, course_id:string){
+    addDoc(studyGroupsColl, {Course_id: course_id, Description: description, Group_name: name, schedule: schedule}).then(() =>{
+      console.log("New group created");
+    })
+  },
+  async deleteCourse(course_id:string){
+    const toRemove = doc(db, "courses/"+course_id);
+    deleteDoc(toRemove).then(()=>{
+      console.debug("Course "+course_id+" Removed")
+      this.courses = this.courses.filter(
+      (course) => course.course_id !== course_id
+    );
     })
   }
 }})
