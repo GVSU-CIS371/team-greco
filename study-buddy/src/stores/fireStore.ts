@@ -17,6 +17,11 @@ import {
   addDoc,
   DocumentReference,
   deleteDoc,
+  arrayUnion,
+  Timestamp,
+  updateDoc,
+  getDoc,
+  DocumentSnapshot,
 } from "firebase/firestore";
 
 const coursesColl: CollectionReference = collection(db, "courses");
@@ -26,6 +31,7 @@ export const useFireStore = defineStore("FireStore", {
   state: () =>({
     courses: [] as CourseType[],
     studyGroups: [] as StudyGroupType[],
+    user: {},
   }),
   actions: {
     init(){
@@ -60,6 +66,24 @@ export const useFireStore = defineStore("FireStore", {
 
     return groups;
   },
+  async getStudyGroup(group_id:String){
+    const myDoc: DocumentReference = doc(db, "StudyGroups/"+group_id);
+    
+    const qd:DocumentSnapshot = await getDoc(myDoc); 
+
+    if(qd.exists()){
+      const data = qd.data();
+      const group:StudyGroupType = {
+        group_id: qd.id,
+        course_id: data.Course_id,
+        description: data.Description,
+        group_name: data.Group_name,
+        meeting_schedule: data.schedule,
+      }
+      console.log(group)
+      return group;
+    }
+  },
   async addCourse(name:string, section:string){
     const doc1:DocumentReference = doc(db, "courses", name +""+ section);
     console.log(doc1);
@@ -85,5 +109,17 @@ export const useFireStore = defineStore("FireStore", {
       (course) => course.course_id !== course_id
     );
     })
+  },
+  async sendMessage(group_id:string, message:string, sender:string){
+    const groupDoc = doc(db, "StudyGroups", group_id);
+
+    await updateDoc(groupDoc, {
+      messages: arrayUnion({
+        text: message,
+        sender: sender,
+        timestamp: new Date().toISOString()
+      })
+    })
   }
+  
 }})
