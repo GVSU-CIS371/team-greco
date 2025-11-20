@@ -32,10 +32,13 @@ const router = useRouter()
 const auth = getAuth()
 
 
-onAuthStateChanged(auth, (user) =>{
+onAuthStateChanged(auth, async (user) =>{
   console.log(user);
   if(user){
-    fireStore.user = { name: user.displayName, email: user.email}
+    fireStore.user_id = user.uid;
+  }else{
+    fireStore.user = {};
+    router.push("/");
   }
 })
 
@@ -50,7 +53,8 @@ const createAccount = async () => {
     await updateProfile(cr.user, { displayName: name.value }).catch((err) =>
       console.log(err)
     );
-    router.push('/courses');
+    await fireStore.createUser(cr.user.uid, name.value, email.value);
+    router.push('/profile');
   } catch (err) {
     alert(`Unable to create account ${err.message}`);
   }
@@ -59,7 +63,7 @@ const createAccount = async () => {
 async function login() {
   try {
     await signInWithEmailAndPassword(auth, email.value, password.value)
-    router.push('/courses')
+    router.push('/profile')
   } catch (err) {
     console.error(err)
     alert("Login failed")

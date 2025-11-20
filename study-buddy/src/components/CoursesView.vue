@@ -8,7 +8,6 @@
       <v-col class="text-right">
         <v-btn
           color="primary"
-          prepend-icon="mdi-plus"
           @click="openDialog = true"
         >
           Add Course

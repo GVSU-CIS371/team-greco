@@ -1,5 +1,5 @@
 export type UserType = {
-  user_id: number; // Primary key
+  user_id: string; // Primary key
   name: string;
   email: string;
   major: string;

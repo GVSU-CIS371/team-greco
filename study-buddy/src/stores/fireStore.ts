@@ -2,7 +2,8 @@ import { defineStore } from "pinia";
 import db from "../firebase.ts";
 import type {
   CourseType,
-  StudyGroupType
+  StudyGroupType,
+  UserType
 } from "../types/objectTypes.ts";
 import {
   collection,
@@ -31,7 +32,7 @@ export const useFireStore = defineStore("FireStore", {
   state: () =>({
     courses: [] as CourseType[],
     studyGroups: [] as StudyGroupType[],
-    user: {},
+    user_id: '',
   }),
   actions: {
     init(){
@@ -120,6 +121,45 @@ export const useFireStore = defineStore("FireStore", {
         timestamp: new Date().toISOString()
       })
     })
+  },
+  async createUser(uid:string, name:string, email:string){
+    await setDoc(doc(db, "Users", uid), {
+      name: name,
+      email: email,
+      major: "",
+      availability: "",
+    });
+    console.log("added user");
+  },
+  async getUser(){
+    if(this.user_id){
+      const userRef = doc(db, "Users", this.user_id)
+      const snapshot:DocumentSnapshot = await getDoc(userRef)
+      if(snapshot.exists()){
+        const data = snapshot.data();
+        console.log(data);
+        return {
+          user_id: this.user_id,
+          name: data.name,
+          email: data.email,
+          major: data.major,
+          availability: data.availability
+        }
+      }
+    }
+  },
+  async updateUser(uid:string, name:string, major:string, availability:string){
+    try {
+      const userRef = doc(db, "Users", uid);
+      await updateDoc(userRef, {
+        name: name,
+        major: major,
+        availability: availability,
+      })
+      console.log("Updated User");
+    } catch (e){
+      console.error("Error updating user: ", e);
+    }
   }
   
 }})
